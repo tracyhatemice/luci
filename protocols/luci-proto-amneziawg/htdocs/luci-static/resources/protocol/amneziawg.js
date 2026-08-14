@@ -185,6 +185,88 @@ return network.registerProtocol('amneziawg', {
 		o = s.taboption('advanced', form.DynamicList, 'ip6prefix', _('IPv6 routed prefix'), _('This is the prefix routed to you by your provider for use by clients'));
 		o.datatype = 'cidr6';
 
+		// -- amneziawg ------------------------------------------------------------------
+
+		try {
+			s.tab('amneziawg', _('AmneziaWG Settings'), _('Further information about AmneziaWG interfaces and peers at <a href=\'https://docs.amnezia.org/documentation/amnezia-wg\'>amnezia.org</a>.'));
+		}
+		catch(e) {}
+
+		o = s.taboption('amneziawg', form.Value, 'awg_jc', _('Jc'), _('Junk packet count.'));
+		o.datatype = 'uinteger';
+		o.placeholder = '0';
+		o.optional = true;
+
+		o = s.taboption('amneziawg', form.Value, 'awg_jmin', _('Jmin'), _('Junk packet minimum size.'));
+		o.datatype = 'uinteger';
+		o.placeholder = '0';
+		o.optional = true;
+
+		o = s.taboption('amneziawg', form.Value, 'awg_jmax', _('Jmax'), _('Junk packet maximum size.'));
+		o.datatype = 'uinteger';
+		o.placeholder = '0';
+		o.optional = true;
+
+		o = s.taboption('amneziawg', form.Value, 'awg_s1', _('S1'), _('Handshake initiation packet junk header size.'));
+		o.datatype = 'uinteger';
+		o.placeholder = '0';
+		o.optional = true;
+
+		o = s.taboption('amneziawg', form.Value, 'awg_s2', _('S2'), _('Handshake response packet junk header size.'));
+		o.datatype = 'uinteger';
+		o.placeholder = '0';
+		o.optional = true;
+
+		o = s.taboption('amneziawg', form.Value, 'awg_s3', _('S3'), _('Cookie reply packet junk header size.'));
+		o.datatype = 'uinteger';
+		o.placeholder = '0';
+		o.optional = true;
+
+		o = s.taboption('amneziawg', form.Value, 'awg_s4', _('S4'), _('Transport packet junk header size.'));
+		o.datatype = 'uinteger';
+		o.placeholder = '0';
+		o.optional = true;
+
+		o = s.taboption('amneziawg', form.Value, 'awg_h1', _('H1'), _('Handshake initiation packet type header.'));
+		o.datatype = 'string';
+		o.placeholder = '1';
+		o.optional = true;
+
+		o = s.taboption('amneziawg', form.Value, 'awg_h2', _('H2'), _('Handshake response packet type header.'));
+		o.datatype = 'string';
+		o.placeholder = '2';
+		o.optional = true;
+
+		o = s.taboption('amneziawg', form.Value, 'awg_h3', _('H3'), _('Handshake cookie packet type header.'));
+		o.datatype = 'string';
+		o.placeholder = '3';
+		o.optional = true;
+
+		o = s.taboption('amneziawg', form.Value, 'awg_h4', _('H4'), _('Transport packet type header.'));
+		o.datatype = 'string';
+		o.placeholder = '4';
+		o.optional = true;
+
+		o = s.taboption('amneziawg', form.Value, 'awg_i1', _('I1'), _('First special junk packet signature.'));
+		o.datatype = 'string';
+		o.optional = true;
+
+		o = s.taboption('amneziawg', form.Value, 'awg_i2', _('I2'), _('Second special junk packet signature.'));
+		o.datatype = 'string';
+		o.optional = true;
+
+		o = s.taboption('amneziawg', form.Value, 'awg_i3', _('I3'), _('Third special junk packet signature.'));
+		o.datatype = 'string';
+		o.optional = true;
+
+		o = s.taboption('amneziawg', form.Value, 'awg_i4', _('I4'), _('Fourth special junk packet signature.'));
+		o.datatype = 'string';
+		o.optional = true;
+
+		o = s.taboption('amneziawg', form.Value, 'awg_i5', _('I5'), _('Fifth special junk packet signature.'));
+		o.datatype = 'string';
+		o.optional = true;
+
 		// -- peers -----------------------------------------------------------------------
 
 		try {
@@ -337,6 +419,23 @@ return network.registerProtocol('amneziawg', {
 					s.getOption('listen_port').getUIElement(s.section).setValue(config.interface_listenport || '');
 					s.getOption('addresses').getUIElement(s.section).setValue(config.interface_address);
 
+					s.getOption('awg_jc').getUIElement(s.section).setValue(config.interface_jc || '');
+					s.getOption('awg_jmin').getUIElement(s.section).setValue(config.interface_jmin || '');
+					s.getOption('awg_jmax').getUIElement(s.section).setValue(config.interface_jmax || '');
+					s.getOption('awg_s1').getUIElement(s.section).setValue(config.interface_s1 || '');
+					s.getOption('awg_s2').getUIElement(s.section).setValue(config.interface_s2 || '');
+					s.getOption('awg_s3').getUIElement(s.section).setValue(config.interface_s3 || '');
+					s.getOption('awg_s4').getUIElement(s.section).setValue(config.interface_s4 || '');
+					s.getOption('awg_h1').getUIElement(s.section).setValue(config.interface_h1 || '');
+					s.getOption('awg_h2').getUIElement(s.section).setValue(config.interface_h2 || '');
+					s.getOption('awg_h3').getUIElement(s.section).setValue(config.interface_h3 || '');
+					s.getOption('awg_h4').getUIElement(s.section).setValue(config.interface_h4 || '');
+					s.getOption('awg_i1').getUIElement(s.section).setValue(config.interface_i1 || '');
+					s.getOption('awg_i2').getUIElement(s.section).setValue(config.interface_i2 || '');
+					s.getOption('awg_i3').getUIElement(s.section).setValue(config.interface_i3 || '');
+					s.getOption('awg_i4').getUIElement(s.section).setValue(config.interface_i4 || '');
+					s.getOption('awg_i5').getUIElement(s.section).setValue(config.interface_i5 || '');
+
 					if (config.interface_dns)
 						s.getOption('dns').getUIElement(s.section).setValue(config.interface_dns);
 
@@ -482,7 +581,7 @@ return network.registerProtocol('amneziawg', {
 			return E('em', _('No peers defined yet.'));
 		};
 
-		o = ss.option(form.Flag, 'disabled', _('Disabled'), _('Enable / Disable peer. Restart amneziawg interface to apply changes.'));
+		o = ss.option(form.Flag, 'disabled', _('Disabled'), _('Enable / Disable peer. Restart AmneziaWG interface to apply changes.'));
 		o.editable = true;
 		o.optional = true;
 		o.width = '5%';
@@ -769,7 +868,7 @@ return network.registerProtocol('amneziawg', {
 				ips.forEach(function(ip) { qro.value(ip) });
 				qro.onchange = handleConfigChange;
 
-				qro = qrs.option(form.DynamicList, 'dns_servers', _('DNS Servers'), _('DNS servers for the remote clients using this tunnel to your openwrt device. Some amneziawg clients require this to be set.'));
+				qro = qrs.option(form.DynamicList, 'dns_servers', _('DNS Servers'), _('DNS servers for the remote clients using this tunnel to your openwrt device. Some AmneziaWG clients require this to be set.'));
 				qro.datatype = 'ipaddr';
 				qro.default = dns;
 				qro.onchange = handleConfigChange;
