@@ -48,7 +48,20 @@ var AWG_PARAMS = [
 	[ 'awg_i2',   'I2'   ],
 	[ 'awg_i3',   'I3'   ],
 	[ 'awg_i4',   'I4'   ],
-	[ 'awg_i5',   'I5'   ]
+	[ 'awg_i5',   'I5'   ],
+
+	/* Added in AmneziaWG 3.0. */
+	[ 'awg_header_protection_key',    'HeaderProtectionKey'    ],
+	[ 'awg_content_padding_addition', 'ContentPaddingAddition' ],
+	[ 'awg_rekey_after_time',         'RekeyAfterTime'         ],
+	[ 'awg_rekey_timeout',            'RekeyTimeout'           ],
+	[ 'awg_reject_after_time',        'RejectAfterTime'        ],
+	[ 'awg_keepalive_timeout',        'KeepaliveTimeout'       ],
+	[ 'awg_max_handshake_attempts',   'MaxHandshakeAttempts'   ],
+
+	/* Added in AmneziaWG 3.1. A third element marks a boolean parameter. */
+	[ 'awg_random_trailers',          'RandomTrailers',        true ],
+	[ 'awg_disable_cookies',          'DisableCookies',        true ]
 ];
 
 function validateBase64(section_id, value) {
@@ -62,6 +75,15 @@ function validateBase64(section_id, value) {
 		return _('Invalid Base64 key string');
 
 	return true;
+}
+
+// AmneziaWG boolean config values may be written as on/off as well as 1/0,
+// but a LuCI flag widget only understands '1' and '0'.
+function parseBoolConfig(value) {
+	if (value == null)
+		return '0';
+
+	return String(value).trim().match(/^(on|true|yes|[1-9][0-9]*)$/i) ? '1' : '0';
 }
 
 var stubValidator = {
@@ -248,22 +270,22 @@ return network.registerProtocol('amneziawg', {
 		o.placeholder = '0';
 		o.optional = true;
 
-		o = s.taboption('amneziawg', form.Value, 'awg_h1', _('H1'), _('Handshake initiation packet type header.'));
+		o = s.taboption('amneziawg', form.Value, 'awg_h1', _('H1'), _('Handshake initiation packet type header. A range such as <code>10-20</code> is also accepted.'));
 		o.datatype = 'string';
 		o.placeholder = '1';
 		o.optional = true;
 
-		o = s.taboption('amneziawg', form.Value, 'awg_h2', _('H2'), _('Handshake response packet type header.'));
+		o = s.taboption('amneziawg', form.Value, 'awg_h2', _('H2'), _('Handshake response packet type header. A range such as <code>10-20</code> is also accepted.'));
 		o.datatype = 'string';
 		o.placeholder = '2';
 		o.optional = true;
 
-		o = s.taboption('amneziawg', form.Value, 'awg_h3', _('H3'), _('Handshake cookie packet type header.'));
+		o = s.taboption('amneziawg', form.Value, 'awg_h3', _('H3'), _('Handshake cookie packet type header. A range such as <code>10-20</code> is also accepted.'));
 		o.datatype = 'string';
 		o.placeholder = '3';
 		o.optional = true;
 
-		o = s.taboption('amneziawg', form.Value, 'awg_h4', _('H4'), _('Transport packet type header.'));
+		o = s.taboption('amneziawg', form.Value, 'awg_h4', _('H4'), _('Transport packet type header. A range such as <code>10-20</code> is also accepted.'));
 		o.datatype = 'string';
 		o.placeholder = '4';
 		o.optional = true;
@@ -286,6 +308,43 @@ return network.registerProtocol('amneziawg', {
 
 		o = s.taboption('amneziawg', form.Value, 'awg_i5', _('I5'), _('Fifth special junk packet signature.'));
 		o.datatype = 'string';
+		o.optional = true;
+
+		// -- amneziawg 3.x --------------------------------------------------------------
+
+		o = s.taboption('amneziawg', form.Value, 'awg_header_protection_key', _('Header Protection Key'), _('Base64-encoded key used to obfuscate packet headers. Must match on both sides.'));
+		o.datatype = 'string';
+		o.optional = true;
+		o.validate = validateBase64;
+
+		o = s.taboption('amneziawg', form.Value, 'awg_content_padding_addition', _('Content Padding Addition'), _('Extra bytes appended to transport packets. A range such as <code>10-20</code> is also accepted.'));
+		o.datatype = 'string';
+		o.optional = true;
+
+		o = s.taboption('amneziawg', form.Value, 'awg_rekey_after_time', _('Rekey After Time'), _('Seconds before a session is renegotiated. A range such as <code>110-130</code> is also accepted.'));
+		o.datatype = 'string';
+		o.optional = true;
+
+		o = s.taboption('amneziawg', form.Value, 'awg_rekey_timeout', _('Rekey Timeout'), _('Seconds between handshake retries. A range such as <code>5-7</code> is also accepted.'));
+		o.datatype = 'string';
+		o.optional = true;
+
+		o = s.taboption('amneziawg', form.Value, 'awg_reject_after_time', _('Reject After Time'), _('Seconds before a session is discarded. A range such as <code>170-190</code> is also accepted.'));
+		o.datatype = 'string';
+		o.optional = true;
+
+		o = s.taboption('amneziawg', form.Value, 'awg_keepalive_timeout', _('Keepalive Timeout'), _('Seconds of inactivity before a keepalive is sent. A range such as <code>8-12</code> is also accepted.'));
+		o.datatype = 'string';
+		o.optional = true;
+
+		o = s.taboption('amneziawg', form.Value, 'awg_max_handshake_attempts', _('Max Handshake Attempts'), _('Handshake retries before giving up. A range such as <code>15-20</code> is also accepted.'));
+		o.datatype = 'string';
+		o.optional = true;
+
+		o = s.taboption('amneziawg', form.Flag, 'awg_random_trailers', _('Random Trailers'), _('Append random trailing bytes to packets. Must match on both sides.'));
+		o.optional = true;
+
+		o = s.taboption('amneziawg', form.Flag, 'awg_disable_cookies', _('Disable Cookies'), _('Disable the cookie reply mechanism. Must match on both sides.'));
 		o.optional = true;
 
 		// -- peers -----------------------------------------------------------------------
@@ -456,6 +515,15 @@ return network.registerProtocol('amneziawg', {
 					s.getOption('awg_i3').getUIElement(s.section).setValue(config.interface_i3 || '');
 					s.getOption('awg_i4').getUIElement(s.section).setValue(config.interface_i4 || '');
 					s.getOption('awg_i5').getUIElement(s.section).setValue(config.interface_i5 || '');
+					s.getOption('awg_header_protection_key').getUIElement(s.section).setValue(config.interface_headerprotectionkey || '');
+					s.getOption('awg_content_padding_addition').getUIElement(s.section).setValue(config.interface_contentpaddingaddition || '');
+					s.getOption('awg_rekey_after_time').getUIElement(s.section).setValue(config.interface_rekeyaftertime || '');
+					s.getOption('awg_rekey_timeout').getUIElement(s.section).setValue(config.interface_rekeytimeout || '');
+					s.getOption('awg_reject_after_time').getUIElement(s.section).setValue(config.interface_rejectaftertime || '');
+					s.getOption('awg_keepalive_timeout').getUIElement(s.section).setValue(config.interface_keepalivetimeout || '');
+					s.getOption('awg_max_handshake_attempts').getUIElement(s.section).setValue(config.interface_maxhandshakeattempts || '');
+					s.getOption('awg_random_trailers').getUIElement(s.section).setValue(parseBoolConfig(config.interface_randomtrailers));
+					s.getOption('awg_disable_cookies').getUIElement(s.section).setValue(parseBoolConfig(config.interface_disablecookies));
 
 					if (config.interface_dns)
 						s.getOption('dns').getUIElement(s.section).setValue(config.interface_dns);
@@ -799,10 +867,20 @@ return network.registerProtocol('amneziawg', {
 			for (var i = 0; i < AWG_PARAMS.length; i++) {
 				var awgOpt = AWG_PARAMS[i][0];
 				var awgKey = AWG_PARAMS[i][1];
+				var awgIsBool = AWG_PARAMS[i][2];
 				var awgVal = s.formvalue(s.section, awgOpt);
 
-				if (awgVal != null && awgVal !== '')
-					awgParamLines.push(awgKey + ' = ' + awgVal);
+				if (awgVal == null || awgVal === '')
+					continue;
+
+				// A flag widget reports '0' when off. Emitting a disabled
+				// parameter would be pointless here and actively harmful: a
+				// peer running an older AmneziaWG rejects the whole config on
+				// the first key its parser does not recognise.
+				if (awgIsBool && parseBoolConfig(awgVal) !== '1')
+					continue;
+
+				awgParamLines.push(awgKey + ' = ' + awgVal);
 			}
 
 			return [
