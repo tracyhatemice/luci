@@ -341,10 +341,10 @@ return network.registerProtocol('amneziawg', {
 		o.datatype = 'string';
 		o.optional = true;
 
-		o = s.taboption('amneziawg', form.Flag, 'awg_random_trailers', _('Random Trailers'), _('Append random trailing bytes to packets. Must match on both sides.'));
+		o = s.taboption('amneziawg', form.Flag, 'awg_random_trailers', _('Random Trailers'), _('Append random trailing bytes to packets. A peer only accepts padded packets if it also has this enabled, so enable it on both sides.'));
 		o.optional = true;
 
-		o = s.taboption('amneziawg', form.Flag, 'awg_disable_cookies', _('Disable Cookies'), _('Disable the cookie reply mechanism. Must match on both sides.'));
+		o = s.taboption('amneziawg', form.Flag, 'awg_disable_cookies', _('Disable Cookies'), _('Stop replying to handshakes with cookies under load. This is a local choice and does not need to match the peer.'));
 		o.optional = true;
 
 		// -- peers -----------------------------------------------------------------------
