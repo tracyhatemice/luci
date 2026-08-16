@@ -312,7 +312,7 @@ return network.registerProtocol('amneziawg', {
 
 		// -- amneziawg 3.x --------------------------------------------------------------
 
-		o = s.taboption('amneziawg', form.Value, 'awg_header_protection_key', _('Header Protection Key'), _('Base64-encoded key used to obfuscate packet headers. Must match on both sides.'));
+		o = s.taboption('amneziawg', form.Value, 'awg_header_protection_key', _('Header Protection Key'), _('Base64-encoded key used to obfuscate packet headers. Must be identical on both sides, and requires S1-S4 to each be at least 12.'));
 		o.datatype = 'string';
 		o.optional = true;
 		o.validate = validateBase64;
